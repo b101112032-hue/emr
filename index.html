@@ -1,0 +1,673 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Global Electronic Health Record (EHR)</title>
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&family=Noto+Sans+TC:wght@400;500;700&family=Noto+Sans+JP:wght@400;500;700&family=Noto+Sans+KR:wght@400;500;700&family=Noto+Sans+SC:wght@400;500;700&display=swap" rel="stylesheet">
+    <!-- FontAwesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --primary-50: #f0f7ff;
+            --primary-100: #e0f0fe;
+            --primary-200: #bae6fd;
+            --primary-400: #38bdf8;
+            --primary-500: #0ea5e9;
+            --primary-600: #0284c7;
+            --primary-700: #0369a1;
+            --primary-900: #0c4a6e;
+            --bg-color: #f8fafc;
+            --card-bg: #ffffff;
+            --text-main: #1e293b;
+            --text-muted: #64748b;
+            --border-color: #e2e8f0;
+            --shadow-sm: 0 1px 3px rgba(0,0,0,0.05), 0 1px 2px rgba(0,0,0,0.03);
+            --shadow-md: 0 4px 6px -1px rgba(14, 165, 233, 0.1), 0 2px 4px -1px rgba(14, 165, 233, 0.06);
+            --radius-lg: 16px;
+            --radius-md: 12px;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Plus Jakarta Sans', 'Noto Sans TC', 'Noto Sans JP', 'Noto Sans KR', sans-serif;
+            transition: background-color 0.2s ease, color 0.2s ease;
+        }
+
+        body {
+            background-color: var(--bg-color);
+            color: var(--text-main);
+            min-height: 100vh;
+            padding: 20px;
+            display: flex;
+            justify-content: center;
+            align-items: flex-start;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 900px;
+            background: var(--card-bg);
+            border-radius: var(--radius-lg);
+            box-shadow: var(--shadow-md);
+            border: 1px solid var(--border-color);
+            overflow: hidden;
+            margin-bottom: 40px;
+        }
+
+        /* Header Header Section */
+        .header {
+            background: linear-gradient(135deg, var(--primary-700), var(--primary-500));
+            color: white;
+            padding: 30px;
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+            position: relative;
+        }
+
+        .header-top {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 15px;
+        }
+
+        .logo-area {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .logo-icon {
+            width: 48px;
+            height: 48px;
+            background: rgba(255, 255, 255, 0.2);
+            backdrop-filter: blur(8px);
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+            color: white;
+        }
+
+        .app-title h1 {
+            font-size: 1.5rem;
+            font-weight: 700;
+            letter-spacing: -0.5px;
+        }
+
+        .app-title p {
+            font-size: 0.85rem;
+            opacity: 0.85;
+        }
+
+        /* Language Selector Switcher */
+        .lang-switcher {
+            display: flex;
+            background: rgba(0, 0, 0, 0.15);
+            padding: 4px;
+            border-radius: 50px;
+            gap: 4px;
+            backdrop-filter: blur(4px);
+        }
+
+        .lang-btn {
+            background: transparent;
+            border: none;
+            color: rgba(255, 255, 255, 0.8);
+            padding: 6px 12px;
+            font-size: 0.8rem;
+            font-weight: 600;
+            border-radius: 20px;
+            cursor: pointer;
+        }
+
+        .lang-btn.active {
+            background: white;
+            color: var(--primary-700);
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+
+        /* Patient Summary Banner inside Header */
+        .patient-card-mini {
+            background: rgba(255, 255, 255, 0.12);
+            backdrop-filter: blur(6px);
+            border-radius: var(--radius-md);
+            padding: 16px;
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+            gap: 12px;
+            border: 1px solid rgba(255, 255, 255, 0.15);
+        }
+
+        .patient-info-item {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .patient-info-item .label {
+            font-size: 0.75rem;
+            opacity: 0.8;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .patient-info-item .value {
+            font-size: 0.95rem;
+            font-weight: 600;
+            margin-top: 2px;
+        }
+
+        /* Main Content Sections */
+        .content-body {
+            padding: 30px;
+            display: flex;
+            flex-direction: column;
+            gap: 24px;
+        }
+
+        .section-card {
+            background: var(--bg-color);
+            border-radius: var(--radius-md);
+            border: 1px solid var(--border-color);
+            padding: 20px;
+        }
+
+        .section-header {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 16px;
+            color: var(--primary-700);
+            font-size: 1.1rem;
+            font-weight: 700;
+            border-bottom: 2px solid var(--primary-100);
+            padding-bottom: 8px;
+        }
+
+        .section-header i {
+            color: var(--primary-500);
+        }
+
+        /* Data Grids & Lists */
+        .info-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+            gap: 16px;
+        }
+
+        .info-box {
+            background: var(--card-bg);
+            padding: 14px;
+            border-radius: 10px;
+            border: 1px solid var(--border-color);
+            box-shadow: var(--shadow-sm);
+        }
+
+        .info-box .title {
+            font-size: 0.75rem;
+            color: var(--text-muted);
+            font-weight: 600;
+            text-transform: uppercase;
+            margin-bottom: 4px;
+        }
+
+        .info-box .val {
+            font-size: 0.95rem;
+            color: var(--text-main);
+            font-weight: 500;
+        }
+
+        /* Tags / Badges for Medical History / Medications / Surgeries */
+        .tag-list {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+        }
+
+        .medical-tag {
+            background: var(--primary-50);
+            color: var(--primary-700);
+            border: 1px solid var(--primary-200);
+            padding: 6px 12px;
+            border-radius: 20px;
+            font-size: 0.85rem;
+            font-weight: 500;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .medical-tag i {
+            font-size: 0.7rem;
+            color: var(--primary-500);
+        }
+
+        .medical-tag.alert {
+            background: #fef2f2;
+            color: #b91c1c;
+            border-color: #fecaca;
+        }
+        .medical-tag.alert i {
+            color: #ef4444;
+        }
+
+        /* Timeline / Structured List for Surgeries */
+        .timeline {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .timeline-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: var(--card-bg);
+            padding: 12px 16px;
+            border-radius: 10px;
+            border: 1px solid var(--border-color);
+        }
+
+        .timeline-info h4 {
+            font-size: 0.95rem;
+            font-weight: 600;
+            color: var(--text-main);
+        }
+
+        .timeline-info p {
+            font-size: 0.8rem;
+            color: var(--text-muted);
+        }
+
+        .timeline-date {
+            background: var(--primary-100);
+            color: var(--primary-700);
+            padding: 4px 10px;
+            border-radius: 6px;
+            font-size: 0.75rem;
+            font-weight: 600;
+        }
+
+        /* Footer Action & Notes */
+        .footer-note {
+            text-align: center;
+            padding: 16px;
+            font-size: 0.8rem;
+            color: var(--text-muted);
+            border-top: 1px solid var(--border-color);
+            background: var(--bg-color);
+        }
+
+        /* Responsive Breakpoints */
+        @media(max-width: 600px) {
+            body { padding: 10px; }
+            .header { padding: 20px 15px; }
+            .content-body { padding: 15px; }
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <!-- 頂部標題與多國語言切換 -->
+    <div class="header">
+        <div class="header-top">
+            <div class="logo-area">
+                <div class="logo-icon">
+                    <i class="fa-solid fa-file-medical"></i>
+                </div>
+                <div class="app-title">
+                    <h1 id="ui-app-title">隨身智慧電子病歷</h1>
+                    <p id="ui-app-subtitle">Global Smart Electronic Health Record</p>
+                </div>
+            </div>
+
+            <!-- 語言切換按鈕群組 -->
+            <div class="lang-switcher">
+                <button class="lang-btn active" onclick="switchLanguage('zh')">中文</button>
+                <button class="lang-btn" onclick="switchLanguage('en')">EN</button>
+                <button class="lang-btn" onclick="switchLanguage('ja')">日本語</button>
+                <button class="lang-btn" onclick="switchLanguage('ko')">한국어</button>
+                <button class="lang-btn" onclick="switchLanguage('vi')">Tiếng Việt</button>
+            </div>
+        </div>
+
+        <!-- 個人基本資料摘要卡 -->
+        <div class="patient-card-mini">
+            <div class="patient-info-item">
+                <span class="label" data-i18n="lbl-name">姓名 / Name</span>
+                <span class="value">Alex Wang (王小明)</span>
+            </div>
+            <div class="patient-info-item">
+                <span class="label" data-i18n="lbl-dob">出生年月日 / DOB</span>
+                <span class="value">1992-08-15</span>
+            </div>
+            <div class="patient-info-item">
+                <span class="label" data-i18n="lbl-blood">血型 / Blood Type</span>
+                <span class="value">A Rh+</span>
+            </div>
+            <div class="patient-info-item">
+                <span class="label" data-i18n="lbl-emergency">緊急聯絡人 / Contact</span>
+                <span class="value">+886 912-345-678</span>
+            </div>
+        </div>
+    </div>
+
+    <!-- 內容主體 -->
+    <div class="content-body">
+
+        <!-- 1. 個人史 Personal History -->
+        <div class="section-card">
+            <div class="section-header">
+                <i class="fa-solid fa-user-shield"></i>
+                <span data-i18n="sec-personal">個人與生活史 (Personal History)</span>
+            </div>
+            <div class="info-grid">
+                <div class="info-box">
+                    <div class="title" data-i18n="lbl-smoke">抽菸習慣 / Smoking</div>
+                    <div class="val" data-i18n="val-nonsmoke">無抽菸史 (Never Smoked)</div>
+                </div>
+                <div class="info-box">
+                    <div class="title" data-i18n="lbl-alcohol">飲酒習慣 / Alcohol</div>
+                    <div class="val" data-i18n="val-alcohol">社交飲酒 (Social Drinking Only)</div>
+                </div>
+                <div class="info-box">
+                    <div class="title" data-i18n="lbl-allergy">藥物過敏 / Allergies</div>
+                    <div class="val" style="color: #b91c1c; font-weight: 600;" data-i18n="val-allergy">盤尼西林 (Penicillin)</div>
+                </div>
+                <div class="info-box">
+                    <div class="title" data-i18n="lbl-occupation">職業 / Occupation</div>
+                    <div class="val" data-i18n="val-occupation">醫學研究員 (Medical Researcher)</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 2. 疾病史 Disease History -->
+        <div class="section-card">
+            <div class="section-header">
+                <i class="fa-solid fa-heart-pulse"></i>
+                <span data-i18n="sec-disease">現病史與疾病史 (Medical & Disease History)</span>
+            </div>
+            <div class="tag-list">
+                <span class="medical-tag"><i class="fa-solid fa-circle"></i> <span data-i18n="dis-1">輕度高血壓 (Mild Hypertension)</span></span>
+                <span class="medical-tag"><i class="fa-solid fa-circle"></i> <span data-i18n="dis-2">季節性過敏性鼻炎 (Allergic Rhinitis)</span></span>
+            </div>
+        </div>
+
+        <!-- 3. 過去家族史 Family History -->
+        <div class="section-card">
+            <div class="section-header">
+                <i class="fa-solid fa-people-roof"></i>
+                <span data-i18n="sec-family">過去家族史 (Family Medical History)</span>
+            </div>
+            <div class="tag-list">
+                <span class="medical-tag alert"><i class="fa-solid fa-triangle-exclamation"></i> <span data-i18n="fam-1">父親：第 2 型糖尿病 (Father: Type 2 Diabetes)</span></span>
+                <span class="medical-tag alert"><i class="fa-solid fa-triangle-exclamation"></i> <span data-i18n="fam-2">母親：高血壓病史 (Mother: Hypertension)</span></span>
+            </div>
+        </div>
+
+        <!-- 4. 手術史 Surgical History -->
+        <div class="section-card">
+            <div class="section-header">
+                <i class="fa-solid fa-scalpel"></i>
+                <span data-i18n="sec-surgery">手術與外傷史 (Surgical & Procedure History)</span>
+            </div>
+            <div class="timeline">
+                <div class="timeline-item">
+                    <div class="timeline-info">
+                        <h4 data-i18n="surg-1-title">右膝關節鏡微創手術 (Arthroscopic Right Knee Surgery)</h4>
+                        <p data-i18n="surg-1-desc">半月板撕裂修補術，恢復良好</p>
+                    </div>
+                    <div class="timeline-date">2021-05</div>
+                </div>
+                <div class="timeline-item">
+                    <div class="timeline-info">
+                        <h4 data-i18n="surg-2-title">急性盲腸炎腹腔鏡切除 (Laparoscopic Appendectomy)</h4>
+                        <p data-i18n="surg-2-desc">無術後併發症</p>
+                    </div>
+                    <div class="timeline-date">2016-11</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 5. 用藥史 Medication History -->
+        <div class="section-card">
+            <div class="section-header">
+                <i class="fa-solid fa-pills"></i>
+                <span data-i18n="sec-medication">目前長期用藥史 (Current Medications)</span>
+            </div>
+            <div class="tag-list">
+                <span class="medical-tag"><i class="fa-solid fa-prescription"></i> <span data-i18n="med-1">維生素 D3 補充劑 1000 IU (Vitamin D3)</span></span>
+                <span class="medical-tag"><i class="fa-solid fa-prescription"></i> <span data-i18n="med-2">Omega-3 魚油 (Fish Oil)</span></span>
+            </div>
+        </div>
+
+        <!-- 6. 其他醫療備忘 (Others / Forgotten Notes) -->
+        <div class="section-card">
+            <div class="section-header">
+                <i class="fa-solid fa-notes-medical"></i>
+                <span data-i18n="sec-others">其他備忘與特殊註記 (Other Medical Notes)</span>
+            </div>
+            <div class="info-box" style="width: 100%;">
+                <div class="val" style="font-size: 0.9rem; line-height: 1.6; color: var(--text-muted);" data-i18n="val-others">
+                    • 曾於 2023 年接種過破傷風疫苗加強劑。<br>
+                    • 視力狀況：近視配戴隱形眼鏡。<br>
+                    • 攜帶型電子病歷，供跨國旅遊或緊急醫療支援使用。
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+    <!-- 頁尾 -->
+    <div class="footer-note" data-i18n="footer-text">
+        🔒 本資料僅存於您的本機裝置中，保障絕對隱私。即時多國語言醫療翻譯介面。
+    </div>
+</div>
+
+<script>
+    // 多國語言辭典資料庫
+    const translations = {
+        zh: {
+            "ui-app-title": "隨身智慧電子病歷",
+            "ui-app-subtitle": "Global Smart Electronic Health Record",
+            "lbl-name": "姓名 / Name",
+            "lbl-dob": "出生年月日 / DOB",
+            "lbl-blood": "血型 / Blood Type",
+            "lbl-emergency": "緊急聯絡人 / Contact",
+            "sec-personal": "個人與生活史 (Personal History)",
+            "lbl-smoke": "抽菸習慣 / Smoking",
+            "val-nonsmoke": "無抽菸史 (Never Smoked)",
+            "lbl-alcohol": "飲酒習慣 / Alcohol",
+            "val-alcohol": "社交飲酒 (Social Drinking Only)",
+            "lbl-allergy": "藥物過敏 / Allergies",
+            "val-allergy": "盤尼西林 (Penicillin)",
+            "lbl-occupation": "職業 / Occupation",
+            "val-occupation": "醫學研究員 (Medical Researcher)",
+            "sec-disease": "現病史與疾病史 (Medical & Disease History)",
+            "dis-1": "輕度高血壓 (Mild Hypertension)",
+            "dis-2": "季節性過敏性鼻炎 (Allergic Rhinitis)",
+            "sec-family": "過去家族史 (Family Medical History)",
+            "fam-1": "父親：第 2 型糖尿病 (Father: Type 2 Diabetes)",
+            "fam-2": "母親：高血壓病史 (Mother: Hypertension)",
+            "sec-surgery": "手術與外傷史 (Surgical & Procedure History)",
+            "surg-1-title": "右膝關節鏡微創手術 (Arthroscopic Right Knee Surgery)",
+            "surg-1-desc": "半月板撕裂修補術，恢復良好",
+            "surg-2-title": "急性盲腸炎腹腔鏡切除 (Laparoscopic Appendectomy)",
+            "surg-2-desc": "無術後併發症",
+            "sec-medication": "目前長期用藥史 (Current Medications)",
+            "med-1": "維生素 D3 補充劑 1000 IU (Vitamin D3)",
+            "med-2": "Omega-3 魚油 (Fish Oil)",
+            "sec-others": "其他備忘與特殊註記 (Other Medical Notes)",
+            "val-others": "• 曾於 2023 年接種過破傷風疫苗加強劑。<br>• 視力狀況：近視配戴隱形眼鏡。<br>• 攜帶型電子病歷，供跨國旅遊或緊急醫療支援使用。",
+            "footer-text": "🔒 本資料僅存於您的本機裝置中，保障絕對隱私。即時多國語言醫療翻譯介面。"
+        },
+        en: {
+            "ui-app-title": "Global Smart Electronic Health Record",
+            "ui-app-subtitle": "Portable Personal Medical Profile",
+            "lbl-name": "Full Name",
+            "lbl-dob": "Date of Birth",
+            "lbl-blood": "Blood Type",
+            "lbl-emergency": "Emergency Contact",
+            "sec-personal": "Personal & Lifestyle History",
+            "lbl-smoke": "Smoking Status",
+            "val-nonsmoke": "Never Smoked",
+            "lbl-alcohol": "Alcohol Consumption",
+            "val-alcohol": "Social Drinking Only",
+            "lbl-allergy": "Drug Allergies",
+            "val-allergy": "Penicillin",
+            "lbl-occupation": "Occupation",
+            "val-occupation": "Medical Researcher",
+            "sec-disease": "Medical & Disease History",
+            "dis-1": "Mild Hypertension",
+            "dis-2": "Allergic Rhinitis",
+            "sec-family": "Family Medical History",
+            "fam-1": "Father: Type 2 Diabetes",
+            "fam-2": "Mother: Hypertension",
+            "sec-surgery": "Surgical & Trauma History",
+            "surg-1-title": "Arthroscopic Right Knee Surgery",
+            "surg-1-desc": "Meniscus tear repair, recovered well",
+            "surg-2-title": "Laparoscopic Appendectomy",
+            "surg-2-desc": "No post-op complications",
+            "sec-medication": "Current Medication History",
+            "med-1": "Vitamin D3 Supplement 1000 IU",
+            "med-2": "Omega-3 Fish Oil",
+            "sec-others": "Additional Notes & Reminders",
+            "val-others": "• Tetanus booster vaccine received in 2023.<br>• Vision: Myopia, wears contact lenses.<br>• Portable EHR for international travel or emergency medical support.",
+            "footer-text": "🔒 Stored securely on your local device. Instant multilingual medical translation interface."
+        },
+        ja: {
+            "ui-app-title": "モバイル電子カルテ",
+            "ui-app-subtitle": "Global Smart Electronic Health Record",
+            "lbl-name": "氏名 / Name",
+            "lbl-dob": "生年月日 / DOB",
+            "lbl-blood": "血液型 / Blood Type",
+            "lbl-emergency": "緊急連絡先 / Contact",
+            "sec-personal": "個人・生活歴 (Personal History)",
+            "lbl-smoke": "喫煙歴 / Smoking",
+            "val-nonsmoke": "非喫煙 (Never Smoked)",
+            "lbl-alcohol": "飲酒歴 / Alcohol",
+            "val-alcohol": "機会飲酒のみ (Social Only)",
+            "lbl-allergy": "薬物アレルギー / Allergies",
+            "val-allergy": "ペニシリン (Penicillin)",
+            "lbl-occupation": "職業 / Occupation",
+            "val-occupation": "医学研究者 (Medical Researcher)",
+            "sec-disease": "既往歴・疾患歴 (Medical History)",
+            "dis-1": "軽度高血圧 (Mild Hypertension)",
+            "dis-2": "アレルギー性鼻炎 (Allergic Rhinitis)",
+            "sec-family": "家族歴 (Family History)",
+            "fam-1": "父：2型糖尿病 (Father: Type 2 Diabetes)",
+            "fam-2": "母：高血圧 (Mother: Hypertension)",
+            "sec-surgery": "手術・外傷歴 (Surgical History)",
+            "surg-1-title": "右膝関節鏡視下手術 (Right Knee Arthroscopy)",
+            "surg-1-desc": "半月板縫合術、経過良好",
+            "surg-2-title": "腹腔鏡下虫垂切除術 (Appendectomy)",
+            "surg-2-desc": "術後合併症なし",
+            "sec-medication": "現在の服薬歴 (Current Medications)",
+            "med-1": "ビタミンD3 サプリメント 1000 IU",
+            "med-2": "オメガ3 フィッシュオイル",
+            "sec-others": "その他の備考 (Other Notes)",
+            "val-others": "• 2023年に破傷風ワクチンのブースター接種済み。<br>• 視力：近視、コンタクトレンズ使用。<br>• 海外渡航や救急医療サポート用の携帯型電子カルテ。",
+            "footer-text": "🔒 データはお使いのデバイスにのみ保存されます。多言語医療通訳インターフェース。"
+        },
+        ko: {
+            "ui-app-title": "모바일 스마트 전자의무기록",
+            "ui-app-subtitle": "Global Smart Electronic Health Record",
+            "lbl-name": "이름 / Name",
+            "lbl-dob": "생년월일 / DOB",
+            "lbl-blood": "혈액형 / Blood Type",
+            "lbl-emergency": "비상 연락처 / Contact",
+            "sec-personal": "개인 및 생활력 (Personal History)",
+            "lbl-smoke": "흡연력 / Smoking",
+            "val-nonsmoke": "비흡연 (Never Smoked)",
+            "lbl-alcohol": "음주력 / Alcohol",
+            "val-alcohol": "사교적 음주 (Social Only)",
+            "lbl-allergy": "약물 알레르기 / Allergies",
+            "val-allergy": "페니실린 (Penicillin)",
+            "lbl-occupation": "직업 / Occupation",
+            "val-occupation": "의학 연구원 (Medical Researcher)",
+            "sec-disease": "과거 질병력 (Disease History)",
+            "dis-1": "경증 고혈압 (Mild Hypertension)",
+            "dis-2": "알레르기성 비염 (Allergic Rhinitis)",
+            "sec-family": "가족력 (Family History)",
+            "fam-1": "부친: 제2형 당뇨병 (Father: Type 2 Diabetes)",
+            "fam-2": "모친: 고혈압 (Mother: Hypertension)",
+            "sec-surgery": "수술 및 외상력 (Surgical History)",
+            "surg-1-title": "우측 무릎 관절경 수술 (Right Knee Arthroscopy)",
+            "surg-1-desc": "반월상 연골판 파열 봉합술, 회복 양호",
+            "surg-2-title": "복강경 맹장 수술 (Appendectomy)",
+            "surg-2-desc": "합병증 없음",
+            "sec-medication": "현재 복용 약물 (Current Medications)",
+            "med-1": "비타민 D3 보충제 1000 IU",
+            "med-2": "오메가-3 오일",
+            "sec-others": "기타 메모 및 특이사항 (Other Notes)",
+            "val-others": "• 2023년 파상풍 예방접종 부스터 완료.<br>• 시력: 근시, 콘택트렌즈 착용.<br>• 해외여행 및 응급 의료 지원용 휴대용 전자의무기록.",
+            "footer-text": "🔒 기기에만 안전하게 저장됩니다. 다국어 의료 번역 인터페이스."
+        },
+        vi: {
+            "ui-app-title": "Hồ sơ Bệnh án Điện tử Di động",
+            "ui-app-subtitle": "Global Smart Electronic Health Record",
+            "lbl-name": "Họ và tên / Name",
+            "lbl-dob": "Ngày sinh / DOB",
+            "lbl-blood": "Nhóm máu / Blood Type",
+            "lbl-emergency": "Liên hệ khẩn cấp / Contact",
+            "sec-personal": "Tiền sử Cá nhân & Lối sống",
+            "lbl-smoke": "Hút thuốc / Smoking",
+            "val-nonsmoke": "Không hút thuốc (Never Smoked)",
+            "lbl-alcohol": "Rượu bia / Alcohol",
+            "val-alcohol": "Chỉ uống xã giao (Social Only)",
+            "lbl-allergy": "Dị ứng thuốc / Allergies",
+            "val-allergy": "Penicillin",
+            "lbl-occupation": "Nghề nghiệp / Occupation",
+            "val-occupation": "Nghiên cứu viên Y học (Medical Researcher)",
+            "sec-disease": "Tiền sử Bệnh lý",
+            "dis-1": "Tăng huyết áp nhẹ (Mild Hypertension)",
+            "dis-2": "Viêm mũi dị ứng theo mùa (Allergic Rhinitis)",
+            "sec-family": "Tiền sử Gia đình",
+            "fam-1": "Bố: Tiểu đường tuýp 2 (Father: Type 2 Diabetes)",
+            "fam-2": "Mẹ: Cao huyết áp (Mother: Hypertension)",
+            "sec-surgery": "Tiền sử Phẫu thuật & Chấn thương",
+            "surg-1-title": "Phẫu thuật nội soi khớp gối phải (Right Knee Surgery)",
+            "surg-1-desc": "Khâu sụn chêm, hồi phục tốt",
+            "surg-2-title": "Phẫu thuật nội soi cắt ruột thừa (Appendectomy)",
+            "surg-2-desc": "Không có biến chứng sau mổ",
+            "sec-medication": "Thuốc đang sử dụng (Current Medications)",
+            "med-1": "Vitamin D3 1000 IU",
+            "med-2": "Dầu cá Omega-3",
+            "sec-others": "Ghi chú & Lưu ý Khác",
+            "val-others": "• Đã tiêm nhắc lại vắc-xin uốn ván năm 2023.<br>• Thị lực: Cận thị, đeo kính áp tròng.<br>• Hồ sơ y tế di động phục vụ du lịch quốc tế hoặc hỗ trợ y tế khẩn cấp.",
+            "footer-text": "🔒 Dữ liệu được lưu trữ an toàn trên thiết bị của bạn. Giao diện dịch thuật y tế đa ngôn ngữ."
+        }
+    };
+
+    // 語言切換核心函式
+    function switchLanguage(lang) {
+        // 更新按鈕樣態
+        document.querySelectorAll('.lang-btn').forEach(btn => {
+            btn.classList.remove('active');
+        });
+        event.target.classList.add('active');
+
+        // 替換所有帶有 data-i18n 屬性的文字
+        const elements = document.querySelectorAll('[data-i18n]');
+        elements.forEach(el => {
+            const key = el.getAttribute('data-i18n');
+            if (translations[lang] && translations[lang][key]) {
+                el.innerHTML = translations[lang][key];
+            }
+        });
+
+        // 調整網頁根標籤的 lang 屬性
+        document.documentElement.lang = lang;
+    }
+</script>
+
+</body>
+</html>
